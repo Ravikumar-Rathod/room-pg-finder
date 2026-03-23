@@ -17,7 +17,10 @@ COPY . .
 # Install dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Generate key & cache
+# Fix permissions (IMPORTANT)
+RUN chmod -R 775 storage bootstrap/cache
+
+# Generate key & clear cache
 RUN php artisan key:generate || true
 RUN php artisan config:clear
 
