@@ -24,8 +24,8 @@ RUN chmod -R 775 storage bootstrap/cache
 RUN php artisan key:generate || true
 RUN php artisan config:clear
 
-# Expose port
+# Expose dynamic port
 EXPOSE 10000
 
-# Start Laravel
-CMD php -S 0.0.0.0:10000 -t public
+# Start Laravel (FIXED)
+CMD php -S 0.0.0.0:$PORT -t public
