@@ -29,3 +29,5 @@ EXPOSE 10000
 
 # Start Laravel (FIXED)
 CMD php -S 0.0.0.0:$PORT -t public
+
+RUN php artisan migrate --force || true
