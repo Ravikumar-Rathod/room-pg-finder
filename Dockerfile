@@ -11,23 +11,29 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /app
 
-# Copy project
+# Copy project files
 COPY . .
 
-# Install dependencies
+# Install Laravel dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Fix permissions (IMPORTANT)
+# Set proper permissions (IMPORTANT)
 RUN chmod -R 775 storage bootstrap/cache
 
-# Generate key & clear cache
+# Generate app key (safe fallback)
 RUN php artisan key:generate || true
-RUN php artisan config:clear
 
-# Expose dynamic port
+# Clear and cache configs (IMPORTANT)
+RUN php artisan config:clear
+RUN php artisan cache:clear
+RUN php artisan route:clear
+RUN php artisan view:clear
+
+# Run database migrations (VERY IMPORTANT)
+RUN php artisan migrate --force || true
+
+# Expose port (Render uses dynamic port)
 EXPOSE 10000
 
-# Start Laravel (FIXED)
+# Start Laravel server
 CMD php -S 0.0.0.0:$PORT -t public
-
-RUN php artisan migrate --force || true
