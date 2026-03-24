@@ -14,26 +14,14 @@ WORKDIR /app
 # Copy project files
 COPY . .
 
-# Install Laravel dependencies
+# Install dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Set proper permissions (IMPORTANT)
+# Fix permissions
 RUN chmod -R 775 storage bootstrap/cache
 
-# Generate app key (safe fallback)
-RUN php artisan key:generate || true
-
-# Clear and cache configs (IMPORTANT)
-RUN php artisan config:clear
-RUN php artisan cache:clear
-RUN php artisan route:clear
-RUN php artisan view:clear
-
-# Run database migrations (VERY IMPORTANT)
-RUN php artisan migrate --force || true
-
-# Expose port (Render uses dynamic port)
+# Expose port
 EXPOSE 10000
 
-# Start Laravel server
+# Start Laravel
 CMD php -S 0.0.0.0:$PORT -t public
