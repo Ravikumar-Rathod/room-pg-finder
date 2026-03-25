@@ -27,7 +27,7 @@ RUN npm run build
 RUN chmod -R 775 storage bootstrap/cache
 
 # Clear cache
-RUN php artisan config:clear
+RUN php artisan config:clear && php artisan config:cache
 
 # Expose dynamic port
 EXPOSE 10000
