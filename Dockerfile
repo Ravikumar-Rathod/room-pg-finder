@@ -8,29 +8,27 @@ RUN apt-get update && apt-get install -y \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Set working directory
 WORKDIR /app
 
 # Copy project
 COPY . .
 
-# Install PHP dependencies
+# Install dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Install Node dependencies
+# Node build
 RUN npm install
-
-# Build frontend (IMPORTANT FIX)
 RUN npm run build
 
-# Fix permissions
+# Permissions
 RUN chmod -R 775 storage bootstrap/cache
 
-# Clear cache
-RUN php artisan config:clear && php artisan config:cache
-
-# Expose dynamic port
+# Expose port
 EXPOSE 10000
 
-# Start Laravel
-CMD php -S 0.0.0.0:$PORT -t public
+# ✅ FIXED START COMMAND
+CMD php artisan config:clear && \
+    php artisan cache:clear && \
+    php artisan config:cache && \
+    php artisan migrate --force && \
+    php -S 0.0.0.0:$PORT -t public
